@@ -1,0 +1,130 @@
+### STARTING WITH LINUX CONTAINERS
+
+## installing docker on ubuntu
+
+sudo apt update
+
+sudo apt dist-upgrade
+
+sudo apt install docker.io
+
+systemctl status docker
+
+sudo systemctl enable docker
+
+sudo systemctl start docker
+
+sudo usermod -aG docker joe
+
+
+## pulling and running containers
+
+# pulling a container
+
+docker pull ubuntu:latest
+
+# display images
+
+docker images
+
+# running a shell from a container
+
+docker run -it ubuntu bash
+
+# show the container
+
+docker ps -a
+
+# create a nginx container
+
+docker run --publish 80:80 --name webserver nginx:latest
+
+# attch a shell
+
+docker exec -it webserver bash
+
+#### Running an FTP  server from a container
+
+# create a vsftpd.conf file
+
+cd /etc
+
+sudo mkdir vsftpd
+
+cd vsftpd
+
+sudo touch vsftpd.conf
+
+
+# create a ftp directory
+
+sudo mkdir -p /var/ftp/pub
+
+# copy few files to that directory
+
+sudo cp /etc/services /etc/login.defs /var/ftp/pub/
+
+
+# get the vsftpd container image
+
+docker images
+
+# run the vsftpd container image
+
+docker run -d -p 20:20 -p 21:21 \
+-p 21100-21110:21100-21110 \
+-v /etc/vsftpd/:/etc/vsftpd/ \
+-v /var/ftp/pub:/var/ftp/pub \
+--name vsftpd vsftpd
+
+docker ps
+
+# to make your vsftpd service accessible outside of the local system
+# be sure to open the FTP ports
+
+sudo firewall-cmd --zone=public --add-service=ftp
+
+sudo firewall-cmd --zone=public --permanent --add-service=ftp
+
+sudo firewall-cmd --zone=public --add-port=21100-21110/tcp
+
+sudo firewall-cmd --zone=public --permanent --add-port=21100-21110/tcp
+
+sudo firewall-cmd reload
+
+
+### Starting and Stopping containers
+
+docker ps
+
+docker ps -a
+
+# restart an existing container
+
+docker start -a 7fhst847j3e
+
+# stop and start a container
+
+docker stop 7fhst847j3e
+
+docker start 7fhst847j3e
+
+# remove a container
+
+docker rm 7fhs847j3e
+
+### Building a container image
+
+## Build an FTP container from GitHub
+
+git clone https://github.com/container-images/vsftpd.git
+
+cd vsftpd
+
+ls
+
+docker build -t vsftpd .
+
+# check new images
+
+docker images
